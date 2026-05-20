@@ -1,0 +1,5 @@
+model_bert_hatespeech.pt
+venv/
+__pycache__/
+*.pyc
+.gitattributes

@@ -1,0 +1,1 @@
+"Download the model file from this link: https://drive.google.com/file/d/1j-ALfhIH0L9gIkSFpggOicTYyZSOrXqU/view?usp=sharing and place it in the project root directory before running streamlit run app.py."

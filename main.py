@@ -4,7 +4,9 @@ from sklearn.model_selection import train_test_split
 from transformers import BertTokenizer
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import classification_report, confusion_matrix
 
 # 1. Load Dataset
 df = pd.read_csv('data/labeled_data.csv')
@@ -12,10 +14,15 @@ print("✅ Dataset successfully loaded!")
 
 # 2. Preprocessing Function
 def clean_tweet(text):
+    # case folding
     text = text.lower()
+    # rt removal
     text = re.sub(r'^rt\s+', '', text)
+    # @ removal
     text = re.sub(r'@[\w]*', '', text)
+    # url removal
     text = re.sub(r'https?://\S+|www\.\S+', '', text)
+    # non alphanumeric filter
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
     text = ' '.join(text.split())
     return text
@@ -42,7 +49,7 @@ print(f"Training Set   : {len(train_df)} rows")
 print(f"Validation Set : {len(val_df)} rows")
 print(f"Testing Set    : {len(test_df)} rows")
 
-# 4. BERT Tokenizer Setup
+# 4. BERT Tokenizer Setup (Hanya Preview)
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 sample_text = train_df['clean_text'].iloc[0]
 tokens = tokenizer.tokenize(sample_text)
@@ -51,12 +58,8 @@ print("\n--- BERT Tokenization Preview ---")
 print(f"Original Text: {sample_text}")
 print(f"Tokens: {tokens}")
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix
-
-# 1. Feature Extraction (TF-IDF)
-print("\n--- Training Baseline Model (Logistic Regression) ---")
+# 5. Feature Extraction (TF-IDF)
+print("\n--- Training Baseline Models ---")
 vectorizer = TfidfVectorizer(max_features=5000)
 X_train = vectorizer.fit_transform(train_df['clean_text'])
 X_test = vectorizer.transform(test_df['clean_text'])
@@ -64,32 +67,39 @@ X_test = vectorizer.transform(test_df['clean_text'])
 y_train = train_df['class']
 y_test = test_df['class']
 
-# 2. Train Logistic Regression
+# --- MODEL 1: LOGISTIC REGRESSION ---
+print("\n[Executing Model 1: Logistic Regression...]")
 baseline_model = LogisticRegression(max_iter=1000, class_weight='balanced')
 baseline_model.fit(X_train, y_train)
-
-# 3. Evaluation
 y_pred = baseline_model.predict(X_test)
 
-print("\n--- Baseline Model Evaluation Results ---")
+print("\n--- Baseline (LogReg) Evaluation Results ---")
 print(classification_report(y_test, y_pred))
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
 
-# --- Model 2: SVM (Support Vector Machine) ---
-print("\n--- Training Model 2: SVM ---")
-# Kita pakai LinearSVC karena cepat dan bagus untuk data teks
+
+# --- MODEL 2: SVM ---
+print("\n[Executing Model 2: SVM...]")
 svm_model = LinearSVC(random_state=42, class_weight='balanced', max_iter=2000)
 svm_model.fit(X_train, y_train)
-
 y_pred_svm = svm_model.predict(X_test)
-print("SVM Evaluation Results:")
-print(classification_report(y_test, y_pred_svm))
 
-# --- Model 3: Random Forest ---
-print("\n--- Training Model 3: Random Forest ---")
-# n_estimators=100 artinya kita pakai 100 pohon keputusan
+print("\n--- SVM Evaluation Results ---")
+print(classification_report(y_test, y_pred_svm))
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred_svm))
+
+
+# --- MODEL 3: RANDOM FOREST ---
+print("\n[Executing Model 3: Random Forest...]")
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
 rf_model.fit(X_train, y_train)
-
 y_pred_rf = rf_model.predict(X_test)
-print("Random Forest Evaluation Results:")
+
+print("\n--- Random Forest Evaluation Results ---")
 print(classification_report(y_test, y_pred_rf))
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred_rf))
+
+print("\n✅ All baseline models trained and evaluated!")

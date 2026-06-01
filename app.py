@@ -11,11 +11,9 @@ def load_model():
     model_name = 'bert-base-uncased' 
     tokenizer = BertTokenizer.from_pretrained(model_name)
     
-    # Using 3 labels based on your .pt file mismatch error
     model = BertForSequenceClassification.from_pretrained(model_name, num_labels=3)
     
-    # Load weights
-    model.load_state_dict(torch.load('model_bert_hatespeech.pt', map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load('model_bert_hatespeech.pt', map_location=torch.device('cpu'), weights_only=False))
     model.eval()
     return tokenizer, model
 
@@ -29,7 +27,7 @@ except Exception as e:
     st.error(f"Failed to load model: {e}")
 
 
-# --- 3. SIDEBAR LEFT (Persis kayak image_f0d39e.png) ---
+# --- 3. SIDEBAR LEFT ---
 with st.sidebar:
     st.header("📊 Dataset Information")
     st.metric(label="Total Dataset Tweets", value="24,783")
@@ -44,11 +42,10 @@ with st.sidebar:
 st.title("🚫 Hate Speech Recognition")
 st.write("Aplikasi analisis otomatis ujaran kebencian dan kata kasar menggunakan arsitektur Transformer.")
 
-# Bikin menu tab tengah ala image_f0d39e.png
 tab1, tab2, tab3 = st.tabs(["🔍 Hate Speech Detector", "📊 Dataset & Methodology", "👥 About Team"])
 
 
-# --- TAB 1: LOGIKA DETECTOR LO ---
+# --- TAB 1: LOGIKA DETECTOR ---
 with tab1:
     st.subheader("Input Text Analysis")
     user_input = st.text_area("Sentence:", placeholder="Type a sentence to analyze (e.g., I hate this or Have a nice day)")
@@ -80,9 +77,9 @@ with tab2:
     st.subheader("Dataset Overview")
     st.write("Project ini dilatih menggunakan dataset klasifikasi sentimen ujaran kebencian dengan rincian kelas sebagai berikut:")
     st.markdown("""
-    *   **Class 0 - Hate Speech:** Tweet yang mengandung kebencian terhadap SARA atau identitas tertentu.
-    *   **Class 1 - Offensive Language:** Tweet yang menggunakan kata-kata kasar/kasar namun tidak menargetkan kelompok tertentu.
-    *   **Class 2 - Neither:** Tweet aman/netral yang tidak mengandung unsur kasar maupun ujaran kebencian.
+    * **Class 0 - Hate Speech:** Tweet yang mengandung kebencian terhadap SARA atau identitas tertentu.
+    * **Class 1 - Offensive Language:** Tweet yang menggunakan kata-kata kasar/kasar namun tidak menargetkan kelompok tertentu.
+    * **Class 2 - Neither:** Tweet aman/netral yang tidak mengandung unsur kasar maupun ujaran kebencian.
     """)
 
 
@@ -91,6 +88,7 @@ with tab3:
     st.subheader("About Team")
     st.write("Project ini dikembangkan oleh Tim Mahasiswa BINUS University untuk final assignment mata kuliah Natural Language Processing.")
     
+    # Perbaikan layout list anggota tim
     st.markdown("**Anggota Tim:**")
     st.write("- Gregorius Gilbert Susanto (2802420031)")
     st.write("- Willian Yehezkiel Alvin (2802419811)")

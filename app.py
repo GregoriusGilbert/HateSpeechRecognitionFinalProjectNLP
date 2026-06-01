@@ -91,12 +91,8 @@ with tab3:
     st.subheader("About Team")
     st.write("Project ini dikembangkan oleh Tim Mahasiswa BINUS University untuk final assignment mata kuliah Natural Language Processing.")
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("""
-        **Anggota Tim:**
-        *   Gregorius Gilbert Susanto - 2802420031
-        *   Willian Yehezkiel Alvin	- 2802419811
-	    *   Vittorio Dinata - 2802427542
-        *   Andrew Ong - 2802420561
-        """)
+    st.markdown("**Anggota Tim:**")
+    st.write("- Gregorius Gilbert Susanto (2802420031)")
+    st.write("- Willian Yehezkiel Alvin (2802419811)")
+    st.write("- Vittorio Dinata (2802427542)")
+    st.write("- Andrew Ong (2802420561)")

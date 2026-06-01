@@ -6,14 +6,27 @@ from transformers import BertTokenizer, BertForSequenceClassification
 st.set_page_config(page_title="Hate Speech Detector", page_icon="🚫", layout="wide")
 
 # --- 2. CACHE MODEL LOADING ---
+# --- 2. CACHE MODEL LOADING ---
+import os
+import gdown
+
 @st.cache_resource
 def load_model():
     model_name = 'bert-base-uncased' 
     tokenizer = BertTokenizer.from_pretrained(model_name)
-    
     model = BertForSequenceClassification.from_pretrained(model_name, num_labels=3)
     
-    model.load_state_dict(torch.load('model_bert_hatespeech.pt', map_location=torch.device('cpu'), weights_only=False))
+    model_path = 'model_bert_hatespeech.pt'
+    
+    # Jika file model belum ada di server Streamlit, download otomatis dari Google Drive
+    if not os.path.exists(model_path):
+        with st.spinner("Downloading BERT Model from Google Drive (418 MB)... Please wait."):
+            id_drive = "1j-ALfhIH0L9gIkSFpggOicTYyZSOrXqU" 
+            url = f'https://drive.google.com/uc?id={id_drive}'
+            gdown.download(url, model_path, quiet=False)
+    
+    # Load weights dengan aman
+    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=False))
     model.eval()
     return tokenizer, model
 

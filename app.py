@@ -57,7 +57,7 @@ with st.sidebar:
     st.metric(label="Features/Classes", value="3 Labels")
     st.write("---")
     st.subheader("🤖 Models Comparison (Accuracy)")
-    st.markdown("- **BERT (Transformer):** `0.91` 🔥")
+    st.markdown("- **BERT (Transformer):** `0.94` 🔥")
     st.markdown("- **Random Forest:** `0.94` 📈")
     st.markdown("- **SVM:** `0.90` 📝")
     st.markdown("- **Logistic Regression:** `0.88` 📋")

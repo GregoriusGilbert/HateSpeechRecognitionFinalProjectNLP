@@ -174,6 +174,7 @@ def load_bert_model():
     
     model_path = 'model_bert_hatespeech.pt'
     
+    # HOTFIX: Jika file ada tapi ukurannya di bawah 100MB (berarti file HTML corrupt dari drive), wipe out!
     if os.path.exists(model_path) and os.path.getsize(model_path) < 100 * 1024 * 1024:
         os.remove(model_path)
     
@@ -181,7 +182,8 @@ def load_bert_model():
         with st.spinner("📥 Fetching heavy Transformer weights from secure storage... Please wait."):
             id_drive = "1j-ALfhIH0L9gIkSFpggOicTYyZSOrXqU" 
             url = f'https://drive.google.com/uc?id={id_drive}'
-            gdown.download(url, model_path, quiet=False, fuzzy=True)
+            # FIX: Hapus fuzzy=True karena gdown versi server lo gak support
+            gdown.download(url, model_path, quiet=False)
     
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=False))
     model.eval()

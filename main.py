@@ -7,9 +7,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
+import joblib  # Tambahan untuk save model otomatis
 
-# 1. Load Dataset
-df = pd.read_csv('data/labeled_data.csv')
+# 1. Load Dataset (Sudah ditambah .csv)
+df = pd.read_csv('data/merged_randomized_with_unnamed_sorted.csv')
 print("✅ Dataset successfully loaded!")
 
 # 2. Preprocessing Function
@@ -27,27 +28,19 @@ def clean_tweet(text):
     text = ' '.join(text.split())
     return text
 
-df['clean_text'] = df['tweet'].apply(clean_tweet)
+df['clean_text'] = df['tweet'].astype(str).apply(clean_tweet)
 
-# 3. Data Splitting (80:10:10)
-train_df, temp_df = train_test_split(
+# 3. Data Splitting (Disamakan 80:20 dengan BERT agar Fair)
+train_df, test_df = train_test_split(
     df, 
     test_size=0.2, 
     random_state=42, 
     stratify=df['class']
 )
 
-val_df, test_df = train_test_split(
-    temp_df, 
-    test_size=0.5, 
-    random_state=42, 
-    stratify=temp_df['class']
-)
-
 print("\n--- Dataset Splitting Results ---")
-print(f"Training Set   : {len(train_df)} rows")
-print(f"Validation Set : {len(val_df)} rows")
-print(f"Testing Set    : {len(test_df)} rows")
+print(f"Training Set : {len(train_df)} rows")
+print(f"Testing Set  : {len(test_df)} rows")
 
 # 4. BERT Tokenizer Setup (Hanya Preview)
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -75,9 +68,6 @@ y_pred = baseline_model.predict(X_test)
 
 print("\n--- Baseline (LogReg) Evaluation Results ---")
 print(classification_report(y_test, y_pred))
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
-
 
 # --- MODEL 2: SVM ---
 print("\n[Executing Model 2: SVM...]")
@@ -87,9 +77,6 @@ y_pred_svm = svm_model.predict(X_test)
 
 print("\n--- SVM Evaluation Results ---")
 print(classification_report(y_test, y_pred_svm))
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred_svm))
-
 
 # --- MODEL 3: RANDOM FOREST ---
 print("\n[Executing Model 3: Random Forest...]")
@@ -99,7 +86,12 @@ y_pred_rf = rf_model.predict(X_test)
 
 print("\n--- Random Forest Evaluation Results ---")
 print(classification_report(y_test, y_pred_rf))
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred_rf))
 
 print("\n✅ All baseline models trained and evaluated!")
+
+# --- 6. SAVE MODEL & VECTORIZER UNTUK STREAMLIT ---
+joblib.dump(baseline_model, 'logistic_model.pkl', compress=3)
+joblib.dump(svm_model, 'svm_model.pkl', compress=3)
+joblib.dump(rf_model, 'rf_model.pkl', compress=3) 
+joblib.dump(vectorizer, 'tfidf_vectorizer.pkl', compress=3)
+print("📦 All models and vectorizer successfully saved as compressed .pkl files!")

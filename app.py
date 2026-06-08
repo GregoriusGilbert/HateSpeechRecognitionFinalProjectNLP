@@ -15,7 +15,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     .stApp {
-        background-color: #0b0f19 !important; /* Deep space dark (lebih solid dari sebelumnya) */
+        background-color: #0b0f19 !important; /* Deep space dark */
         font-family: 'Inter', sans-serif;
     }
     
@@ -69,7 +69,7 @@ st.markdown("""
         border: 1px solid #334155;
     }
 
-    /* Modern Navigation Tabs Customization (Mirip referensi lo) */
+    /* Modern Navigation Tabs Customization */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
         background-color: transparent !important;
@@ -174,6 +174,9 @@ def load_bert_model():
     
     model_path = 'model_bert_hatespeech.pt'
     
+    if os.path.exists(model_path) and os.path.getsize(model_path) < 100 * 1024 * 1024:
+        os.remove(model_path)
+    
     if not os.path.exists(model_path):
         with st.spinner("📥 Fetching heavy Transformer weights from secure storage... Please wait."):
             id_drive = "1j-ALfhIH0L9gIkSFpggOicTYyZSOrXqU" 
@@ -216,7 +219,7 @@ with st.sidebar:
 
 
 # --- 4. MAIN INTERFACE HEADERS ---
-st.markdown("<h1 class='main-title'>🚫 Hate Speech Recognition</h1>", unsafe_allow_html=True)
+st.title("🚫 Hate Speech Recognition")
 st.markdown("<p class='main-subtitle'>Aplikasi analisis otomatis ujaran kebencian dan kata kasar menggunakan perbandingan arsitektur Machine Learning tradisional dan Transformer dua arah.</p>", unsafe_allow_html=True)
 
 st.markdown("""

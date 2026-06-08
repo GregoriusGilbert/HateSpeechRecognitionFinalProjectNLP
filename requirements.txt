@@ -1,6 +1,7 @@
 streamlit
 torch
 transformers
-gdown
+pandas
 joblib
+gdown
 scikit-learn

@@ -403,7 +403,7 @@ with tab3:
         
     with col_data2:
         chart_data = pd.DataFrame(
-            [5462, 23640, 7238], 
+            [8000, 19340, 9000], 
             index=['Class 0 (Hate Speech)', 'Class 1 (Offensive)', 'Class 2 (Safe)'], 
             columns=['Total Tweets']
         )
